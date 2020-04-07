@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=fig1
-#SBATCH --time=1:0:0
+#SBATCH --time=30:0
 #SBATCH --output=slurm_output/fig1.out
 #SBATCH --error=slurm_output/fig1.err
 #SBATCH --mem=40G
