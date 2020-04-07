@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "fig1.py", line 37, in <module>
+    main()
+  File "fig1.py", line 31, in main
+    adata = load_data()
+  File "fig1.py", line 16, in load_data
+    adata = anndata.AnnData(X=counts, obs=metadata)
+  File "/home-2/jpopp4@jhu.edu/.local/lib/python3.7/site-packages/anndata/_core/anndata.py", line 298, in __init__
+    filemode=filemode,
+  File "/home-2/jpopp4@jhu.edu/.local/lib/python3.7/site-packages/anndata/_core/anndata.py", line 485, in _init_as_actual
+    self._check_dimensions()
+  File "/home-2/jpopp4@jhu.edu/.local/lib/python3.7/site-packages/anndata/_core/anndata.py", line 1915, in _check_dimensions
+    "Observations annot. `obs` must have number of rows of `X`"
+ValueError: Observations annot. `obs` must have number of rows of `X` (11231), but has 36044 rows.
