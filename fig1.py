@@ -18,9 +18,13 @@ def load_data():
     adata.var_names = gene_names.keys()
     return adata
 
+def var_genes(adata):
+    sc.pp.highly_variable_genes(adata, n_top_genes=500, batch_key='experiment')
+    sc.pl.highly_variable_genes(adata, save=".png")
+    return adata
+
 def dim_reduce(adata):
     sc.pp.scale(adata)
-    sc.pp.highly_variable_genes(adata, n_top_genes=500)
     sc.tl.pca(adata, svd_solver='arpack')
     pve1 = adata.uns['pca']['variance_ratio'][0]
     pve2 = adata.uns['pca']['variance_ratio'][1]
@@ -30,6 +34,7 @@ def dim_reduce(adata):
 def main():
     results_file="./data/sc.endo.h5ad"
     adata = load_data()
+    adata = var_genes(adata)
     adata = dim_reduce(adata)
     adata.write(results_file)
 
