@@ -11,7 +11,8 @@ GENENAMES_LOC = "/home-2/jpopp4@jhu.edu/work/josh/sc-endoderm-differentiation/da
 
 def load_data():
     counts = np.loadtxt(COUNTS_LOC, delimiter="\t", skiprows=1, usecols=range(1, 36045))
-    metadata = pd.read_csv(METADATA_LOC, sep="\t", header=0)
+    counts = np.transpose(counts)
+    metadata = pd.read_csv(METADATA_LOC, sep="\t")
     gene_names = pd.read_csv(GENENAMES_LOC, sep=' ', header=0)
     adata = anndata.AnnData(X=counts, obs=metadata)
     adata.var_names = gene_names.keys()
