@@ -1,14 +1,17 @@
-Traceback (most recent call last):
-  File "fig1.py", line 37, in <module>
-    main()
-  File "fig1.py", line 31, in main
-    adata = load_data()
-  File "fig1.py", line 16, in load_data
-    adata = anndata.AnnData(X=counts, obs=metadata)
-  File "/home-2/jpopp4@jhu.edu/.local/lib/python3.7/site-packages/anndata/_core/anndata.py", line 298, in __init__
-    filemode=filemode,
-  File "/home-2/jpopp4@jhu.edu/.local/lib/python3.7/site-packages/anndata/_core/anndata.py", line 485, in _init_as_actual
-    self._check_dimensions()
-  File "/home-2/jpopp4@jhu.edu/.local/lib/python3.7/site-packages/anndata/_core/anndata.py", line 1915, in _check_dimensions
-    "Observations annot. `obs` must have number of rows of `X`"
-ValueError: Observations annot. `obs` must have number of rows of `X` (11231), but has 36044 rows.
+... storing 'auxDir' as categorical
+... storing 'day' as categorical
+... storing 'donor' as categorical
+... storing 'expected_format' as categorical
+... storing 'experiment' as categorical
+... storing 'library_types' as categorical
+... storing 'libType' as categorical
+... storing 'mapping_type' as categorical
+... storing 'salmon_version' as categorical
+... storing 'samp_type' as categorical
+... storing 'start_time' as categorical
+... storing 'well_id' as categorical
+... storing 'well_type' as categorical
+... storing 'donor_short_id' as categorical
+... storing 'donor_long_id' as categorical
+WARNING: saving figure to file figures/filter_genes_dispersion.png
+WARNING: saving figure to file figures/pca.png
