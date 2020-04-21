@@ -1,3 +1,5 @@
+cd /work-zfs/abattle4/lab_data/sc_endo_diff/genotypes/
+
 filenames=(
 "ftp://ftp.sra.ebi.ac.uk/vol1/ERZ127/ERZ127571/HPSI0114i-bezi_1.wec.gtarray.HumanCoreExome-12_v1_0.20141111.genotypes.vcf.gz"
 "ftp://ftp.sra.ebi.ac.uk/vol1/ERZ127/ERZ127537/HPSI0114i-eipl_1.wec.gtarray.HumanCoreExome-12_v1_0.20141111.genotypes.vcf.gz"
