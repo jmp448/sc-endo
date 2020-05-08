@@ -5,7 +5,7 @@ cell_type <- "iPSC"
 coef_snps_by_gene <- list()
 for(i in seq(0, 10585, 100)){
   start_pos <- i + 1
-  end_pos <- start_pos + 99
+  end_pos <- min((start_pos + 99), 10585)
   coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
 }
 
