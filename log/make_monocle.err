@@ -72,4 +72,7 @@ The following objects are masked from 'package:Biobase':
 
     exprs, fData, fData<-, pData, pData<-
 
-/tmp/slurmd/job466128/slurm_script: line 10: 10552 Bus error               Rscript ../code/make_monocle.R
+Error in apply(rownames(expression_matrix), 1, substring, first = 17) : 
+  dim(X) must have a positive length
+Calls: data.frame -> apply -> apply
+Execution halted

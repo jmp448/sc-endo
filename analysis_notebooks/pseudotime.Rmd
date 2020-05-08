@@ -1,0 +1,162 @@
+---
+title: "Pseudotime Analysis"
+output: html_notebook
+---
+
+Install packages
+
+```{r warnings=F, messages=F}
+library(Seurat)
+library(slingshot)
+library(ggplot2)
+library(RColorBrewer)
+library(scater)
+```
+
+Load the seurat object
+```{r create_obj}
+sc.seurat <- readRDS("../data/seurat.rds")
+```
+
+Load highly variable features
+```{r}
+varfeat <- read.table('../data/highly_variable_features.tsv', stringsAsFactors=F)
+colnames(varfeat) <- "vfs"
+varfeat$vfs <- apply(matrix(varfeat$vfs), 1, substring, first=17)
+```
+
+Scale data
+```{r}
+sc.seurat <- ScaleData(sc.seurat)
+```
+
+Run PCA, using the variable features determined in scanpy
+```{r}
+sc.seurat <- RunPCA(sc.seurat, features=varfeat$vfs)
+PCAPlot(sc.seurat, group.by="day")
+```
+Looks like before, but note that PC2 has been reversed (PCA is sign invariant).  From here, we can get our first pseudotime assignment (PC1, as used in the paper), and compare it to the component that Stegle found
+```{r}
+pseudotime <- data.frame(sc.seurat$pca@cell.embeddings[,colnames(sc.seurat$pca@cell.embeddings)=="PC_1"])
+colnames(pseudotime) <- "PC1"
+pseudotime$PC1 <- pseudotime$PC1 + abs(min(pseudotime$PC1))
+pseudotime$PC1 <- pseudotime$PC1 / max(pseudotime$PC1)
+pseudotime$"stegle" <- sc.seurat$pseudo
+```
+
+Now let's compare this to the pseudotime that Stegle presented
+```{r}
+ggplot(data=pseudotime, aes(x=stegle, y=PC1)) +
+  geom_point(size=0.1) +
+  geom_line(aes(y=stegle), color='red')
+```
+
+To move onto the next pseudotime assignment, we can use Slingshot
+```{r}
+sc.slingshot <- RunPCA(sc.seurat, npcs=2, features=varfeat$vfs)
+sc.slingshot <- as.SingleCellExperiment(sc.slingshot)
+```
+
+```{r}
+sling <- slingshot(sc.slingshot, clusterLabels = "day", reducedDim="PCA")
+```
+
+```{r}
+colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
+plotcol <- colors[cut(sling$slingPseudotime_1, breaks=100)]
+plot(reducedDims(sling)$PCA, col = plotcol, pch=16, asp = 1)
+lines(SlingshotDataSet(sling), lwd=2, col='black')
+```
+
+Slingshot's graphics may not be the best, but we can do another comparison here
+```{r}
+pseudotime <- data.frame(sling$pseudo)
+colnames(pseudotime) <- "stegle"
+pseudotime$"slingshot" <- sling$slingPseudotime_1
+pseudotime$"slingshot" <- 1 - pseudotime$"slingshot" / max(pseudotime$"slingshot")
+ggplot(data=pseudotime, aes(x=stegle, y=slingshot)) +
+  geom_point(size=0.1) +
+  geom_line(aes(y=stegle), color='red')
+```
+
+Let's try calculating pseudotime from UMAP instead
+```{r}
+sc.seurat <- FindNeighbors(sc.seurat, dims=1:50)
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=5, min.dist=0.2)
+DimPlot(sc.seurat, group.by="day")
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=25, min.dist=0.2)
+DimPlot(sc.seurat, group.by="day")
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=50, min.dist=0.2)
+DimPlot(sc.seurat, group.by="day")
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=5, min.dist=0.5)
+DimPlot(sc.seurat, group.by="day")
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=25, min.dist=0.5)
+DimPlot(sc.seurat, group.by="day")
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=50, min.dist=0.5)
+DimPlot(sc.seurat, group.by="day")
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=5, min.dist=0.8)
+DimPlot(sc.seurat, group.by="day")
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=25, min.dist=0.8)
+DimPlot(sc.seurat, group.by="day")
+
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=50, min.dist=0.8)
+DimPlot(sc.seurat, group.by="day")
+```
+
+This seems to be tighter clustering than we are really looking for for trajectory inference, so I will try tweaking the parameters
+```{r}
+sc.seurat <- RunUMAP(sc.seurat, dims=1:50, n.neighbors=50, min.dist=0.75)
+DimPlot(sc.seurat, group.by="day")
+```
+
+Let's see what slingshot can do with this
+```{r}
+sc.sce.umap <- as.SingleCellExperiment(sc.seurat)
+```
+
+```{r}
+sc.sce.umap <- slingshot(sc.sce.umap, clusterLabels='day', reducedDim="UMAP")
+```
+Compare UMAP pseudotime to stegle and add it to the dataframe
+```{r}
+pseudotime$"UMAP" <- sc.sce.umap$slingPseudotime_1
+pseudotime$"UMAP" <- 1-pseudotime$"UMAP" / max(pseudotime$"UMAP")
+ggplot(data=pseudotime, aes(x=stegle, y=UMAP)) +
+  geom_point(size=0.1) +
+  geom_line(aes(y=stegle), color='red')
+```
+
+```{r}
+sc.sce.umap <- getCurves(sc.sce.umap)
+```
+
+View UMAP-based principal curve
+```{r}
+cl1 <- unclass(as.factor(sc.sce.umap$day))
+plot(reducedDims(sc.sce.umap)$UMAP, col = brewer.pal(4,"Spectral")[cl1], pch=16, cex=0.3, xlim=c(-12,12))
+lines(SlingshotDataSet(sc.sce.umap), lwd=2, col='black')
+legend(x=9.5, y=-5, legend=c("Day 0", "Day 1", "Day 2", "Day 3"),
+       fill=brewer.pal(4,"Spectral"), cex=0.8)
+```
+```{r}
+cl1 <- unclass(as.factor(sc.sce.pca$day))
+plot(reducedDims(sc.sce.pca)$PCA, col = brewer.pal(4,"Spectral")[cl1], pch=16, cex=0.3, xlim=c(-12,18))
+lines(SlingshotDataSet(sc.sce.pca), lwd=2, col='black')
+legend(x=13, y=-4, legend=c("Day 0", "Day 1", "Day 2", "Day 3"),
+       fill=brewer.pal(4,"Spectral"), cex=0.8)
+```
+
+Write pseudotimes to a metadata file
+```{r}
+sc.pseudo <- AddMetaData(sc.seurat, pseudotime)
+metadata <- sc.pseudo@meta.data
+write.table(metadata, file="../data/metadata.pseudotime.tsv", sep="\t", quote=F)
+```
