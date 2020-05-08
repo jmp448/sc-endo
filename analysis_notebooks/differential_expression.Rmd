@@ -1,0 +1,42 @@
+---
+title: "Differential Expression Analysis"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r}
+library(Seurat)
+```
+
+Load data
+```{r}
+sc.seurat <- readRDS("../data/seurat.rds")
+pseudotimes <- readRDS("../data/pseudotimes.rds")
+sc.seurat <- AddMetaData(sc.seurat, pseudotimes)
+```
+
+Differential expression analysis of stem cell marker gene
+```{r}
+FeatureScatter(sc.seurat, feature1="stegle", feature2="NANOG", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="PC1", feature2="NANOG", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="slingshot", feature2="NANOG", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="UMAP", feature2="NANOG", group.by="day", span=0.2)
+```
+
+Differential expression analysis of mesendoderm marker gene
+```{r}
+FeatureScatter(sc.seurat, feature1="stegle", feature2="T", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="PC1", feature2="T", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="slingshot", feature2="T", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="UMAP", feature2="T", group.by="day", span=0.2)
+```
+
+Differential expression analysis of definitive endoderm marker gene
+```{r}
+FeatureScatter(sc.seurat, feature1="stegle", feature2="GATA6", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="PC1", feature2="GATA6", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="slingshot", feature2="GATA6", group.by="day", span=0.2)
+FeatureScatter(sc.seurat, feature1="UMAP", feature2="GATA6", group.by="day", span=0.2)
+```
+

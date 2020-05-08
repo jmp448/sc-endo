@@ -1,2 +1,5 @@
 data/*
+josh_data/*
 analysis_notebooks/cache/*
+jupyter-notebook*.log
+slurm-*.out
