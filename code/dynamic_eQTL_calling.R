@@ -31,7 +31,7 @@ colnames(geno_PCs) <- c("geno_PC1", "geno_PC2", "geno_PC3", "geno_PC4",
 
 start_pos <- as.numeric(inputArgs[1]) + 1
 #end_pos <- dim(expr)[2]
-end_pos <- min(start + 99, dim(expr)[2])
+end_pos <- min(start_pos + 99, dim(expr)[2])
 
 # Read in the pseudotime 
 metadata <- read.delim("/work-zfs/abattle4/prashanthi/sc-endo/data/metadata.pseudotime.tsv")
@@ -44,6 +44,7 @@ for(isample in rownames(expr)){
 coef_snps_by_gene <- list()
 pseudotime_by_gene <- list()
 interaction_by_gene <- list()
+index <- 1
 for(i in c(start_pos:end_pos)){
   print(i)
   geno_subset <- geno[ ,snps.select[[i]][ ,3]]
@@ -72,14 +73,15 @@ for(i in c(start_pos:end_pos)){
       rownames(coef_time) <- rownames(coef_snps)
       rownames(coef_interaction) <- rownames(coef_snps)
     }
-    coef_snps_by_gene[[i]] <- coef_snps
-    pseudotime_by_gene[[i]] <- coef_time
-    interaction_by_gene[[i]] <- coef_interaction
+    coef_snps_by_gene[[index]] <- coef_snps
+    pseudotime_by_gene[[index]] <- coef_time
+    interaction_by_gene[[index]] <- coef_interaction
   }else{
-    coef_snps_by_gene[[i]] <- NA
-    pseudotime_by_gene[[i]] <- NA
-    interaction_by_gene[[i]] <- NA
+    coef_snps_by_gene[[index]] <- NA
+    pseudotime_by_gene[[index]] <- NA
+    interaction_by_gene[[index]] <- NA
   }
+  index <- index + 1
 }
 
 names(coef_snps_by_gene) <- names(snps.select)[start_pos:end_pos]
