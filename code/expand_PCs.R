@@ -12,7 +12,7 @@ require(data.table)
 #inputArgs <-  commandArgs(TRUE)
 #cell_type <- inputArgs[1]
 
-cell_types <- c("iPSC", "mesendo", "defendo")
+cell_types <- c("day1", "day3")
 
 for (cell_type in cell_types) {
   sample_count_df <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/expr.rds"))
