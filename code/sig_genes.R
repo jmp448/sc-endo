@@ -1,5 +1,5 @@
 rm(list=ls())
-
+library(ggplot2)
 plots.dir <- "../figures/"
 egenes <- c()
 for (cell_type in c("day1", "day3", "iPSC", "mesendo", "defendo")) {
@@ -7,6 +7,6 @@ for (cell_type in c("day1", "day3", "iPSC", "mesendo", "defendo")) {
     egenes <- c(egenes, nrow(sigs))
 }
 pdf(paste0(plots.dir, cell_type, "_egenes_v_type.pdf"))
-data <- table(egenes, rownames=c("day1", "day3", "iPSC", "mesendo", "defendo"))
-barplot(data, pch = 20, xlab = "Cell Type", ylab = "Significant eGenes")
+data <- data.frame(row.names=c("day1", "day3", "iPSC", "mesendo", "defendo"), "egenes"=egenes)
+ggplot(data, aes(egenes)) + geom_bar()
 dev.off()
