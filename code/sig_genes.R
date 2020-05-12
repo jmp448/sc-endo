@@ -7,6 +7,6 @@ for (cell_type in c("day1", "day3", "iPSC", "mesendo", "defendo")) {
     egenes <- c(egenes, nrow(sigs))
 }
 pdf(paste0(plots.dir, cell_type, "_egenes_v_type.pdf"))
-data <- data.frame(row.names=c("day1", "day3", "iPSC", "mesendo", "defendo"), "egenes"=egenes)
-ggplot(data, aes(egenes)) + geom_bar()
+data <- data.frame("types"=c("day1", "day3", "iPSC", "mesendo", "defendo"), "egenes"=egenes)
+ggplot(data, aes(x=types, y=egenes)) + geom_col()
 dev.off()
