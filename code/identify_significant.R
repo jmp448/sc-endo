@@ -1,12 +1,13 @@
 rm(list = ls())
-
-cell_type <- "iPSC"
+inputArgs <-  commandArgs(TRUE)
+cell_type <- inputArgs[1]
+npcs <- inputArgs[2]
 
 coef_snps_by_gene <- list()
 for(i in seq(0, 10585, 100)){
   start_pos <- i + 1
   end_pos <- min((start_pos + 99), 10585)
-  coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
+  coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/", npcs, "pc/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
 }
 
 nsnps <- lapply(coef_snps_by_gene, function(igene){
@@ -35,9 +36,9 @@ colnames(final_df) <- c("genes", "snps", "p_value")
 
 final_df$adj_p_value <- p.adjust(final_df$p_value, method = "BH")
 
-saveRDS(final_df, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/all_hits.rds"))
+saveRDS(final_df, paste0("../results/eQTL_calling/", cell_type, "/", npcs, "pc/all_hits.rds"))
 
 
 significant_hits <- final_df[final_df$adj_p_value < 0.10, ]
 
-saveRDS(significant_hits, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/significant_hits.rds"))
+saveRDS(significant_hits, paste0("../results/eQTL_calling/", cell_type, "/", npcs, "pc/significant_hits.rds"))

@@ -23,7 +23,7 @@ sample_assignments$sample_id <- as.character(sample_assignments$sample_id)
 
 snps.select <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/snps_matched_genes.rds"))
 
-colnames(expr_PCs) <- paste0("expr_PC", seq(1:npcs))
+colnames(expr_PCs) <- paste0("expr_PC", seq(1:35))
 
 colnames(geno_PCs) <- c("geno_PC1", "geno_PC2", "geno_PC3", "geno_PC4", 
                         "geno_PC5", "geno_PC6", "geno_PC7")
