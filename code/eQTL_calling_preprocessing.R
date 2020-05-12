@@ -13,7 +13,7 @@ require(data.table)
 #inputArgs <-  commandArgs(TRUE)
 #cell_type <- inputArgs[1]
 
-cell_type <- "defendo"
+cell_type <- "mesendo"
 dat.dir <- "/work-zfs/abattle4/prashanthi/sc-endo/data/"
 
 expr <- fread(paste0(dat.dir, "expr/", cell_type, ".csv"), header = T)
@@ -86,9 +86,9 @@ eigen_vectors <- expr.usv$u
 pc.percent <- ((expr.usv$d^2)/sum((expr.usv$d^2)))*100
 
 plots.dir <- "/work-zfs/abattle4/prashanthi/sc-endo/figures/"
-pdf(paste0(plots.dir, "Day1 Scree plot.pdf"))
+pdf(paste0(plots.dir, "Mesendo Scree plot.pdf"))
 plot(pc.percent, pch = 20, xlim = c(1,20), xlab = "PC Number", 
-     ylab = "% Variance explained", main = "Scree plot: All cells")
+     ylab = "% Variance explained", main = "Scree plot: mesendo")
 lines(pc.percent)
 dev.off()
 if(cell_type == "all_cells"){
@@ -97,7 +97,7 @@ plot(expr.usv$u[ ,1], expr.usv$u[ ,2], col = custom_col[as.factor(day)], xlab = 
 legend("bottomright", fill = custom_col, legend = c("Day0", "Day1", "Day2", "Day3"), cex = 0.7)
 }
 
-plot(expr.usv$u[ ,1], expr.usv$u[ ,2], col = as.factor(exp), xlab = "PC1", ylab = "PC2", main = "Day 1 (Experiment)", pch = 20)
+plot(expr.usv$u[ ,1], expr.usv$u[ ,2], col = as.factor(day), xlab = "PC1", ylab = "PC2", main = "Defendo (day)", pch = 20)
 
 rownames(eigen_vectors) <- colnames(sample_count_df)
 eigen_vectors <- eigen_vectors[ ,1:15]

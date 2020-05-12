@@ -45,6 +45,7 @@ coef_snps_by_gene <- list()
 pseudotime_by_gene <- list()
 interaction_by_gene <- list()
 index <- 1
+expr <- scale(expr)
 for(i in c(start_pos:end_pos)){
   print(i)
   geno_subset <- geno[ ,snps.select[[i]][ ,3]]

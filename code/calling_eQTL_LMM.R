@@ -33,6 +33,8 @@ start <- as.numeric(inputArgs[2]) + 1
 end <- min(start + 99, dim(expr)[2])
 coef_snps_by_gene <- list()
 index <- 1
+expr <- scale(expr)
+
 for(i in c(start:end)){
   print(i)
   geno_subset <- geno[ ,snps.select[[i]][ ,3]]
