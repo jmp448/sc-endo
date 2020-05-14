@@ -7,5 +7,5 @@
 
 module load R/3.6.1
 
-Rscript ../code/identify_significant.R $1 $2 > ../log/log/$1/$2-sighits.log
+Rscript ../code/identify_significant.R $1 $2
 

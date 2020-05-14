@@ -11,8 +11,8 @@
 
 for T in iPSC mesendo defendo day1 day3
 do
-    for C in 10 20 30
+    for C in 15
     do
-	sbatch --job-name=sig_$T_$C --error=../log/errors/$T/$C_sig.err --output=../log/outputs/$1/$2_sig.out identify_significant.sh $T $C
+	sbatch --job-name=sig.$T.$C --error=../log/errors/$T.$C.sig.err --output=../log/outputs/$T.$C.sig.out identify_significant.sh $T $C
     done
 done
