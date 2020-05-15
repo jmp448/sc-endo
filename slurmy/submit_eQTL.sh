@@ -15,7 +15,7 @@ do
     do
 	if [ $K == 10500 ] && [ $C == 30 ]
 	then
-	    sbatch --job-name=eQTL_$1_$2_$3 --error=../log/errors/$1/$2-$3 --output=../log/outputs/$1/$2-$3 --mail-user=jpopp4@jhu.edu compute_eQTL.sh $1 $K $C
+	    sbatch --job-name=eQTL_$1_$2_$3 --error=../log/errors/$1/$2-$3 --output=../log/outputs/$1/$2-$3 --mail-user=pravich2@jhu.edu compute_eQTL.sh $1 $K $C
 	else
 	    sbatch --job-name=eQTL_$1_$2_$3 --error=../log/errors/$1/$2-$3 --output=../log/outputs/$1/$2-$3 compute_eQTL.sh $1 $K $C
 	fi
