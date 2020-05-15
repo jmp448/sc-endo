@@ -3,6 +3,8 @@ library(nlme)
 library(pbkrtest)
 
 cell_type <- "all_cells"
+# Effect of time can either be quadratic or linear
+effect <- "linear"
 inputArgs <-  commandArgs(TRUE)
 
 expr <- readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/data/eQTL_calling/", cell_type, "/expr.rds"))
@@ -44,6 +46,8 @@ for(isample in rownames(expr)){
 coef_snps_by_gene <- list()
 pseudotime_by_gene <- list()
 interaction_by_gene <- list()
+pseudotime2_by_gene <- list()
+interaction2_by_gene <- list()
 index <- 1
 expr <- scale(expr)
 for(i in c(start_pos:end_pos)){
@@ -53,9 +57,17 @@ for(i in c(start_pos:end_pos)){
   print(dim(geno_subset))
   if(dim(geno_subset)[2] > 0){
     for(igeno in c(1:dim(geno_subset)[2])){
-      fixed_eff <- cbind(geno_subset[ ,igeno], pseudotime, pseudotime*geno_subset[ ,igeno], expr_PCs[ ,1:10], geno_PCs[ ,1:5])
-      colnames(fixed_eff)[1] <- colnames(geno_subset)[igeno]
-      colnames(fixed_eff)[3] <- "Gxt"
+      if(effect=="quadratic"){
+	print(effect)
+	fixed_eff <- cbind(geno_subset[ ,igeno], pseudotime, pseudotime*geno_subset[ ,igeno], pseudotime*pseudotime,  pseudotime*geno_subset[ ,igeno]*pseudotime, expr_PCs[ ,1:10], geno_PCs[ ,1:5])
+      	colnames(fixed_eff)[1] <- colnames(geno_subset)[igeno]
+      	colnames(fixed_eff)[3] <- "Gxt"
+	colnames(fixed_eff)[4] <- "t^2"
+	colnames(fixed_eff)[5] <- "Gxt^2"}
+	else{
+		fixed_eff <- cbind(geno_subset[ ,igeno], pseudotime, pseudotime*geno_subset[ ,igeno], expr_PCs[ ,1:10], geno_PCs[ ,1:5])
+      		colnames(fixed_eff)[1] <- colnames(geno_subset)[igeno]
+      		colnames(fixed_eff)[3] <- "Gxt"}
       data_df <- data.frame(expr[ ,i], fixed_eff, sample_assignments$individuals)
       colnames(data_df) <- c("expression", colnames(fixed_eff), "individuals")
       eQTL.model <- lmer(expression ~ (. - individuals) + (1 | individuals), data = data_df)
@@ -66,21 +78,37 @@ for(i in c(start_pos:end_pos)){
         coef_snps <- icoefs[2, ]
         coef_time <- icoefs[3, ]
         coef_interaction <- icoefs[4, ]
+	if(effect == "quadratic"){
+		coef_time2 <- icoefs[5, ]
+		coef_interaction2 <- icoefs[6, ]
+	}
       }else{
         coef_snps <- rbind(coef_snps, icoefs[2, ])
         coef_time <- rbind(coef_time, icoefs[3, ])
         coef_interaction <- rbind(coef_interaction, icoefs[4, ])
-      }
+	if(effect == "quadratic"){
+                coef_time2 <- rbind(coef_time2, icoefs[5, ])
+                coef_interaction2 <- rbind(coef_interaction2, icoefs[6, ])
+      }}
       rownames(coef_time) <- rownames(coef_snps)
       rownames(coef_interaction) <- rownames(coef_snps)
+      if(effect == "quadratic"){
+	rownames(coef_time2) <- rownames(coef_snps)
+	rownames(coef_interaction2) <- rownames(coef_snps)}
     }
     coef_snps_by_gene[[index]] <- coef_snps
     pseudotime_by_gene[[index]] <- coef_time
     interaction_by_gene[[index]] <- coef_interaction
+    if(effect == "quadratic"){
+	pseudotime2_by_gene[[index]] <- coef_time2
+	interaction2_by_gene[[index]] <- coef_interaction2}
   }else{
     coef_snps_by_gene[[index]] <- NA
     pseudotime_by_gene[[index]] <- NA
     interaction_by_gene[[index]] <- NA
+    if(effect == "quadratic"){
+    	pseudotime2_by_gene[[index]] <- NA
+        interaction2_by_gene[[index]] <- NA}
   }
   index <- index + 1
 }
@@ -88,8 +116,15 @@ for(i in c(start_pos:end_pos)){
 names(coef_snps_by_gene) <- names(snps.select)[start_pos:end_pos]
 names(pseudotime_by_gene) <- names(snps.select)[start_pos:end_pos]
 names(interaction_by_gene) <- names(snps.select)[start_pos:end_pos]
-
-saveRDS(coef_snps_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds"))
-saveRDS(pseudotime_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/pseudotime_by_gene_", start_pos, "to", end_pos, ".rds"))
-saveRDS(interaction_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/interaction_by_gene_", start_pos, "to", end_pos, ".rds"))
+if(effect == "quadratic"){
+	saveRDS(coef_snps_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "_quadratic/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds"))
+	saveRDS(pseudotime_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "_quadratic/pseudotime_by_gene_", start_pos, "to", end_pos, ".rds"))
+	saveRDS(interaction_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "_quadratic/interaction_by_gene_", start_pos, "to", end_pos, ".rds"))
+	saveRDS(pseudotime2_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "_quadratic/pseudotime2_by_gene_", start_pos, "to", end_pos, ".rds"))
+  saveRDS(interaction2_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "_quadratic/interaction2_by_gene_", start_pos, "to", end_pos, ".rds"))
+}else{
+ 	 saveRDS(coef_snps_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds"))
+   saveRDS(pseudotime_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/pseudotime_by_gene_", start_pos, "to", end_pos, ".rds"))
+   saveRDS(interaction_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/interaction_by_gene_", start_pos, "to", end_pos, ".rds"))
+}
 

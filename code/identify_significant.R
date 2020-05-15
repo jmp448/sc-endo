@@ -4,10 +4,15 @@ cell_type <- inputArgs[1]
 npcs <- inputArgs[2]
 
 coef_snps_by_gene <- list()
+pseudotime_by_gene <- list()
+interaction_by_gene <- list()
 for(i in seq(0, 10585, 100)){
   start_pos <- i + 1
   end_pos <- min((start_pos + 99), 10585)
-  coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/", npcs, "pc/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
+  #coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/", npcs, "pc/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
+  coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
+  pseudotime_by_gene <- c(pseudotime_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/pseudotime_by_gene_", start_pos, "to", end_pos, ".rds")))
+  interaction_by_gene <- c(interaction_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/interaction_by_gene_", start_pos, "to", end_pos, ".rds")))
 }
 
 nsnps <- lapply(coef_snps_by_gene, function(igene){
