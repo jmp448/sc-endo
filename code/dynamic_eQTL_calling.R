@@ -7,26 +7,23 @@ cell_type <- "all_cells"
 effect <- "linear"
 inputArgs <-  commandArgs(TRUE)
 
-expr <- readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/data/eQTL_calling/", cell_type, "/expr.rds"))
+expr <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/expr.rds"))
 expr <- t(expr)
 
-genes <- readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/data/eQTL_calling/", cell_type, "/gene_locs.rds"))
+genes <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/gene_locs.rds"))
 expr <- expr[ ,colnames(expr) %in% paste(genes$ensmbl, genes$symbol, sep = "_")]
 
-geno <- readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/data/eQTL_calling/", cell_type, "/genotype.rds"))
+geno <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/genotype.rds"))
 geno <- t(geno)
-sample_assignments <- readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/data/eQTL_calling/", cell_type, "/sample_assignments.rds"))
-expr_PCs <- readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/data/eQTL_calling/", cell_type, "/expr_PCs.rds"))
-geno_PCs <- readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/data/eQTL_calling/", cell_type, "/genotype_PCs.rds"))
+sample_assignments <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/sample_assignments.rds"))
+expr_PCs <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/expr_35PCs.rds"))
+geno_PCs <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/genotype_PCs.rds"))
 
 sample_assignments$sample_id <- as.character(sample_assignments$sample_id)
 
-snps.select <- readRDS(paste0("/work-zfs/abattle4/prashanthi/sc-endo/data/eQTL_calling/", cell_type, "/snps_matched_genes.rds"))
+snps.select <- readRDS(paste0("../data/eQTL_calling/", cell_type, "/snps_matched_genes.rds"))
 
-colnames(expr_PCs) <- c("expr_PC1", "expr_PC2", "expr_PC3", "expr_PC4", 
-                        "expr_PC5", "expr_PC6", "expr_PC7", "expr_PC8", 
-                        "expr_PC9", "expr_PC10", "expr_PC11", "expr_PC12", 
-                        "expr_PC13", "expr_PC14", "expr_PC15")
+colnames(expr_PCs) <- paste0("expr_PC", seq(1:35)) 
 
 colnames(geno_PCs) <- c("geno_PC1", "geno_PC2", "geno_PC3", "geno_PC4", 
                         "geno_PC5", "geno_PC6", "geno_PC7")
@@ -36,11 +33,11 @@ start_pos <- as.numeric(inputArgs[1]) + 1
 end_pos <- min(start_pos + 99, dim(expr)[2])
 
 # Read in the pseudotime 
-metadata <- read.delim("/work-zfs/abattle4/prashanthi/sc-endo/data/metadata.pseudotime.tsv")
+metadata <- read.delim("../data/metadata.pseudotime.tsv")
 metadata$agg_group <- paste(metadata$donor_long_id, metadata$experiment, metadata$day, sep = "_")
 pseudotime <- c()
 for(isample in rownames(expr)){
-  pseudotime <- c(pseudotime, mean(metadata$pseudo[metadata$agg_group == isample]))
+  pseudotime <- c(pseudotime, mean(metadata$UMAP[metadata$agg_group == isample]))
 }
 
 coef_snps_by_gene <- list()
@@ -123,8 +120,8 @@ if(effect == "quadratic"){
 	saveRDS(pseudotime2_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "_quadratic/pseudotime2_by_gene_", start_pos, "to", end_pos, ".rds"))
   saveRDS(interaction2_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "_quadratic/interaction2_by_gene_", start_pos, "to", end_pos, ".rds"))
 }else{
- 	 saveRDS(coef_snps_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds"))
-   saveRDS(pseudotime_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/pseudotime_by_gene_", start_pos, "to", end_pos, ".rds"))
-   saveRDS(interaction_by_gene, paste0("/work-zfs/abattle4/prashanthi/sc-endo/results/eQTL_calling/", cell_type, "/interaction_by_gene_", start_pos, "to", end_pos, ".rds"))
+   saveRDS(coef_snps_by_gene, paste0("../results/eQTL_calling/", cell_type, "/UMAP/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds"))
+   saveRDS(pseudotime_by_gene, paste0("../results/eQTL_calling/", cell_type, "/UMAP/pseudotime_by_gene_", start_pos, "to", end_pos, ".rds"))
+   saveRDS(interaction_by_gene, paste0("../results/eQTL_calling/", cell_type, "/UMAP/interaction_by_gene_", start_pos, "to", end_pos, ".rds"))
 }
 
