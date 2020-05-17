@@ -37,12 +37,10 @@ for (pseudotime in c("stegle", "UMAP")) {
   p.mat$context <- factor(p.mat$context, levels=contexts)
   plt <- ggplot(p.mat, aes(x=marker,
                     fill=context,
-                    y=OR,
-		    label=signif)) + 
+                    y=OR)) + 
     geom_bar(stat="identity", position="dodge") +
     xlab("Epigenetic Mark") + 
     ylab("Log10 Odds Ratio") +
-    geom_text(vjust = 0)
     ggtitle(pseudotime) +
     geom_hline(yintercept=0, linetype="dashed") +
     scale_fill_manual(values=c("turquoise4", "burlywood2", "deeppink4")) +
