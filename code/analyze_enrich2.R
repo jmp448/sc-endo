@@ -15,11 +15,19 @@ for (pseudotime in c("stegle", "UMAP")) {
       bg.in <- countLines(paste0("../results/func_analysis/", context, "-", epi.mark, ".static.bed"))
       OR <- log10((sig.in/(sig.tot-sig.in))/(bg.in/(bg.tot-bg.in)))
       p.fish <- fisher.test(matrix(c(sig.in, sig.tot-sig.in, bg.in, bg.tot-bg.in), nrow=2, ncol=2))$p.value
-      print(paste0("Epi: ", epi.mark, ", Context: ", context, ", pval: ", p.fish)) 
-      if (epi.mark=="H3K27me3" & context=="E018") {
-        p.mat <- data.frame("marker"=epi.mark, "context"=context, "OR"=OR)
+      if (p.fish <= 0.01) {
+	lab="***"
+      } else if (p.fish <= 0.05) {
+        lab="**"
+      } else if (p.fish <= 0.1) {
+	lab="*"
       } else {
-        p.mat2 <- data.frame("marker"=epi.mark, "context"=context, "OR"=OR)
+	lab=""
+      }
+      if (epi.mark=="H3K27me3" & context=="E018") {
+        p.mat <- data.frame("marker"=epi.mark, "context"=context, "OR"=OR, "signif"=lab)
+      } else {
+        p.mat2 <- data.frame("marker"=epi.mark, "context"=context, "OR"=OR, "signif"=lab)
 	p.mat <- rbind(p.mat, p.mat2)
       }
     }
@@ -29,13 +37,17 @@ for (pseudotime in c("stegle", "UMAP")) {
   p.mat$context <- factor(p.mat$context, levels=contexts)
   plt <- ggplot(p.mat, aes(x=marker,
                     fill=context,
-                    y=OR)) + 
+                    y=OR,
+		    label=signif)) + 
     geom_bar(stat="identity", position="dodge") +
     xlab("Epigenetic Mark") + 
     ylab("Log10 Odds Ratio") +
     ggtitle(pseudotime) +
     geom_hline(yintercept=0, linetype="dashed") +
-    scale_fill_manual(values=c("turquoise4", "burlywood2", "deeppink4"))
+    scale_fill_manual(values=c("turquoise4", "burlywood2", "deeppink4")) +
+    theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"), 
+            panel.background = element_blank())
   plot(plt)
   dev.off()
 }
