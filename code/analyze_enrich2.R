@@ -13,7 +13,7 @@ for (pseudotime in c("stegle", "UMAP")) {
     for (context in contexts) {
       sig.in <- countLines(paste0("../results/func_analysis/all_cells/", pseudotime, "/", context, "-", epi.mark, ".sig.bed"))
       bg.in <- countLines(paste0("../results/func_analysis/", context, "-", epi.mark, ".static.bed"))
-      OR <- (sig.in/(sig.tot-sig.in))/(bg.in/(bg.tot-bg.in))
+      OR <- log10((sig.in/(sig.tot-sig.in))/(bg.in/(bg.tot-bg.in)))
       if (epi.mark=="H3K27me3" & context=="E018") {
         p.mat <- data.frame("marker"=epi.mark, "context"=context, "OR"=OR)
       } else {
@@ -30,9 +30,10 @@ for (pseudotime in c("stegle", "UMAP")) {
                     y=OR)) + 
     geom_bar(stat="identity", position="dodge") +
     xlab("Epigenetic Mark") + 
-    ylab("Odds Ratio") +
+    ylab("Log10 Odds Ratio") +
     ggtitle(pseudotime) +
-    geom_hline(yintercept=1, linetype="dashed")
+    geom_hline(yintercept=1, linetype="dashed") +
+    scale_fill_manual(values=c("turquoise4", "burlywood2", "deeppink4"))
   plot(plt)
   dev.off()
 }
