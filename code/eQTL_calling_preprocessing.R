@@ -8,6 +8,7 @@ library(rsvd)
 library(tidyverse)
 library(Seurat)
 library(genoscapeRtools)
+library(RColorBrewer)
 require(data.table)
 
 #inputArgs <-  commandArgs(TRUE)

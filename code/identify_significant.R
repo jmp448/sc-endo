@@ -4,15 +4,10 @@ cell_type <- inputArgs[1]
 npcs <- inputArgs[2]
 
 coef_snps_by_gene <- list()
-pseudotime_by_gene <- list()
-interaction_by_gene <- list()
-for(i in seq(0, 10585, 100)){
+for(i in seq(0, 10584, 100)){
   start_pos <- i + 1
-  end_pos <- min((start_pos + 99), 10585)
-  #coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/", npcs, "pc/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
-  coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
-  pseudotime_by_gene <- c(pseudotime_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/pseudotime_by_gene_", start_pos, "to", end_pos, ".rds")))
-  interaction_by_gene <- c(interaction_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/interaction_by_gene_", start_pos, "to", end_pos, ".rds")))
+  end_pos <- min((start_pos + 99), 10584)
+  coef_snps_by_gene <- c(coef_snps_by_gene, readRDS(paste0("../results/eQTL_calling/", cell_type, "/", npcs, "pc/coef_snps_by_gene_", start_pos, "to", end_pos, ".rds")))
 }
 
 nsnps <- lapply(coef_snps_by_gene, function(igene){
@@ -27,6 +22,7 @@ coef_snps_by_gene <- coef_snps_by_gene[!names(coef_snps_by_gene) %in% na_genes]
 for(i in c(1:length(coef_snps_by_gene))){
   coef_snps_by_gene[[i]]$adj_p_value <- p.adjust(coef_snps_by_gene[[i]]$p.KR, method = "bonferroni")
 }
+
 
 genes <- names(coef_snps_by_gene)
 smallest_p_value <- c()

@@ -1,8 +1,8 @@
 #!/bin/bash -l
 #SBATCH
 #SBATCH --time=0:20:0
-#SBATCH --partition=shared
-#SBATCH --ntasks=4
+#SBATCH --partition=lrgmem
+#SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mail-type=END
 #SBATCH --mail-user=pravich2@jhu.edu
